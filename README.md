@@ -244,6 +244,40 @@ npm run dev
 Open:
 - `http://localhost:3002/`
 
+## Live Deployment
+
+I prepared this repo for container-based deployment.
+
+Included deployment files:
+- `Dockerfile`
+- `.dockerignore`
+- `render.yaml`
+
+### Deploy on Render (recommended)
+
+1. Push latest commit to GitHub.
+2. In Render dashboard, choose `New +` -> `Blueprint`.
+3. Select this repository (`CodeByPinar/fraudsense`).
+4. Render will pick up `render.yaml` and create the web service.
+5. Fill required secret env vars in Render:
+	- `DATABASE_URL`
+	- `REDIS_URL`
+	- `JWT_PUBLIC_KEY`
+	- `JWT_PRIVATE_KEY`
+	- `GITHUB_FEEDBACK_TOKEN` (optional, for feedback issue sync)
+	- `GITHUB_FEEDBACK_REPO_OWNER` (optional)
+	- `GITHUB_FEEDBACK_REPO_NAME` (optional)
+6. Deploy and verify:
+	- `GET /health/live`
+	- `GET /health/ready`
+
+### Deploy with any Docker platform
+
+```bash
+docker build -t fraudsense:latest .
+docker run -p 3002:3002 --env-file .env fraudsense:latest
+```
+
 ### 5) Local E2E
 
 ```bash

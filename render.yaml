@@ -1,0 +1,41 @@
+services:
+  - type: web
+    name: fraudsense
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    autoDeploy: true
+    healthCheckPath: /health/live
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3002
+      - key: REPOSITORY_MODE
+        value: prisma
+      - key: JWT_ISSUER
+        value: fraudsense
+      - key: JWT_AUDIENCE
+        value: fraudsense-api
+      - key: ACCESS_TOKEN_TTL_SEC
+        value: 900
+      - key: REFRESH_TOKEN_TTL_SEC
+        value: 604800
+      - key: SERVICE_API_KEYS_JSON
+        value: '{"svc-default":"svc-default-secret"}'
+      - key: GITHUB_FEEDBACK_LABELS
+        value: feedback,triage
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: JWT_PUBLIC_KEY
+        sync: false
+      - key: JWT_PRIVATE_KEY
+        sync: false
+      - key: GITHUB_FEEDBACK_TOKEN
+        sync: false
+      - key: GITHUB_FEEDBACK_REPO_OWNER
+        sync: false
+      - key: GITHUB_FEEDBACK_REPO_NAME
+        sync: false
