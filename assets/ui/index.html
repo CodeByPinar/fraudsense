@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FraudSense | Proje Panosu</title>
+    <link rel="icon" href="/assets/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/assets/ui/styles.css" />
+  </head>
+  <body>
+    <div class="aurora"></div>
+    <main class="layout">
+      <header class="hero">
+        <div class="hero-top">
+          <div class="hero-brand">
+            <img src="/assets/fraudsense-logo.svg" alt="FraudSense logosu" class="logo" />
+            <span class="badge">Fraud Ops Briefing Room</span>
+          </div>
+          <div class="chip-row">
+            <span class="chip" id="kpi-readiness">Readiness: Kontrol</span>
+            <span class="chip" id="kpi-db">DB: Kontrol</span>
+            <span class="chip" id="kpi-redis">Redis: Kontrol</span>
+          </div>
+        </div>
+        <h1>FraudSense Mission Control</h1>
+        <p>
+          Bu panel, projeyi devralan kişilerin mimariyi, güvenlik modelini ve operasyonel
+          durumu tek bakışta anlayabilmesi için tasarlandı. Sistem canlı endpointlerden veri çekerek
+          sürekli güncellenir.
+        </p>
+      </header>
+
+      <section class="panel grid-2">
+        <article class="card ops-center">
+          <div class="card-head">
+            <h2>Canlı Operasyon Merkezi</h2>
+            <div class="toolbar">
+              <button id="refresh-status" class="ghost-btn" type="button">Yenile</button>
+              <label class="switch">
+                <input type="checkbox" id="auto-refresh" checked />
+                <span>Oto 15 sn</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="status-grid">
+            <div>
+              <span class="label">Liveness</span>
+              <strong id="live-status" class="status-pill waiting">Kontrol ediliyor</strong>
+            </div>
+            <div>
+              <span class="label">Readiness</span>
+              <strong id="ready-status" class="status-pill waiting">Kontrol ediliyor</strong>
+            </div>
+            <div>
+              <span class="label">Database</span>
+              <strong id="db-status" class="status-pill waiting">Bekleniyor</strong>
+            </div>
+            <div>
+              <span class="label">Redis</span>
+              <strong id="redis-status" class="status-pill waiting">Bekleniyor</strong>
+            </div>
+          </div>
+
+          <div class="mini-metrics">
+            <div>
+              <span class="label">Liveness RTT</span>
+              <strong id="live-rtt">- ms</strong>
+            </div>
+            <div>
+              <span class="label">Readiness RTT</span>
+              <strong id="ready-rtt">- ms</strong>
+            </div>
+            <div>
+              <span class="label">Son Guncelleme</span>
+              <strong id="last-updated">-</strong>
+            </div>
+          </div>
+
+          <div class="api-target">
+            <label class="label" for="api-base-input">API Hedefi</label>
+            <div class="api-target-row">
+              <input id="api-base-input" type="text" placeholder="http://localhost:3002" />
+              <button id="save-api-base" class="ghost-btn" type="button">Kaydet</button>
+            </div>
+            <small id="api-base-current">Aktif hedef: otomatik</small>
+          </div>
+
+          <div class="sparkline" id="health-sparkline" aria-label="Health timeline"></div>
+        </article>
+
+        <article class="card simulator">
+          <h2>Risk Simülasyonu</h2>
+          <p>
+            Eğitim amaçlı bu simüle panel, kuralların toplu etkisini kavramak için hızlı bir skor
+            öngörüsü verir. Üretim karar mekanizmasının yerine geçmez.
+          </p>
+          <label class="slider-label" for="risk-range">Sinyal Yoğunluğu</label>
+          <input id="risk-range" type="range" min="0" max="100" value="32" />
+          <div class="sim-row">
+            <div>
+              <span class="label">Tahmini Risk Skoru</span>
+              <strong id="sim-score">32</strong>
+            </div>
+            <div>
+              <span class="label">Tavsiye</span>
+              <strong id="sim-decision">Manual Review</strong>
+            </div>
+          </div>
+          <div class="risk-bar">
+            <div id="risk-bar-fill"></div>
+          </div>
+        </article>
+      </section>
+
+      <section class="panel grid-2">
+        <article class="card architecture">
+          <h2>Mimari Akış</h2>
+          <ol class="flow">
+            <li><span>1</span> API Katmanı: Fastify route ve validation</li>
+            <li><span>2</span> Auth Katmanı: JWT / API key HMAC doğrulama</li>
+            <li><span>3</span> Rule Engine: ağırlıklı fraud değerlendirme</li>
+            <li><span>4</span> Persistence: PostgreSQL transaction kaydı</li>
+            <li><span>5</span> Cache: Redis nonce replay ve velocity penceresi</li>
+          </ol>
+        </article>
+
+        <article class="card security-matrix">
+          <h2>Güvenlik Matrisi</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Katman</th>
+                <th>Kontrol</th>
+                <th>Amaç</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Auth</td>
+                <td>JWT RS256 + RBAC</td>
+                <td>Kullanıcı bazlı yetki</td>
+              </tr>
+              <tr>
+                <td>S2S</td>
+                <td>HMAC + nonce + body hash</td>
+                <td>Sahte/replay engelleme</td>
+              </tr>
+              <tr>
+                <td>API</td>
+                <td>Rate limit + helmet</td>
+                <td>Yüzey daraltma</td>
+              </tr>
+              <tr>
+                <td>Data</td>
+                <td>Idempotency kontrolü</td>
+                <td>Tutarlılık ve tekrar yönetimi</td>
+              </tr>
+            </tbody>
+          </table>
+        </article>
+      </section>
+
+      <section class="panel grid-2">
+        <article class="card topology">
+          <h2>Servis Topolojisi</h2>
+          <div class="topology-map" aria-label="Sistem baglanti haritasi">
+            <button class="node active" data-node="api" type="button">API</button>
+            <button class="node" data-node="auth" type="button">Auth</button>
+            <button class="node" data-node="rules" type="button">Rule Engine</button>
+            <button class="node" data-node="postgres" type="button">PostgreSQL</button>
+            <button class="node" data-node="redis" type="button">Redis</button>
+          </div>
+          <p id="node-description" class="node-description">
+            API katmanı tüm istekleri alır, doğrular ve domain servislerine iletir.
+          </p>
+        </article>
+
+        <article class="card event-stream">
+          <h2>Canlı Olay Akışı</h2>
+          <p>Health taramalarından oluşan olaylar burada zaman damgalı görünür.</p>
+          <ul id="event-log" class="event-log" aria-live="polite"></ul>
+        </article>
+      </section>
+
+      <section class="panel grid-2">
+        <article class="card api-explorer">
+          <h2>API Explorer</h2>
+          <p>Temel endpointleri ve örnek curl komutlarını tek tıkla kopyalayın.</p>
+          <div class="api-items">
+            <button class="api-item" data-copy="curl -X GET http://localhost:3002/health/live">
+              <span>GET /health/live</span>
+              <small>Liveness kontrolü</small>
+            </button>
+            <button class="api-item" data-copy="curl -X POST http://localhost:3002/api/v1/auth/login -H 'content-type: application/json' -d '{\"email\":\"ops@fraudsense.io\",\"password\":\"secret\"}'">
+              <span>POST /api/v1/auth/login</span>
+              <small>Access + refresh token</small>
+            </button>
+            <button class="api-item" data-copy="curl -X POST http://localhost:3002/api/v1/transactions -H 'authorization: Bearer <token>' -H 'idempotency-key: key-001' -H 'content-type: application/json' -d '{\"userId\":\"u-1\",\"amount\":1500,\"currency\":\"USD\"}'">
+              <span>POST /api/v1/transactions</span>
+              <small>Fraud değerlendirmeli kayıt</small>
+            </button>
+          </div>
+          <strong id="copy-feedback" class="copy-feedback">Kopyalama için bir endpoint seçin</strong>
+        </article>
+
+        <article class="card quickstart">
+          <h2>Onboarding 90 Saniye</h2>
+          <pre><code>npm install
+npm run type-check
+npm test
+docker compose up -d postgres redis
+npm run dev</code></pre>
+          <p>
+            Ardından bu panelde canlı kontrol kartlarını izleyerek servis bağımlılıklarını
+            doğrulayın.
+          </p>
+        </article>
+      </section>
+
+      <section class="panel grid-2">
+        <article class="card feedback">
+          <h2>Feedback Merkezi</h2>
+          <p>Geliştirme önerisi, hata raporu veya güvenlik bildirimini güvenli şekilde iletin.</p>
+          <form id="feedback-form" class="feedback-form">
+            <div class="form-grid">
+              <label>
+                <span>Ad Soyad</span>
+                <input id="fb-name" name="name" type="text" maxlength="80" required />
+              </label>
+              <label>
+                <span>E-posta</span>
+                <input id="fb-email" name="email" type="email" maxlength="160" required />
+              </label>
+            </div>
+            <label>
+              <span>Kategori</span>
+              <select id="fb-category" name="category" required>
+                <option value="improvement">İyileştirme</option>
+                <option value="bug">Hata</option>
+                <option value="question">Soru</option>
+                <option value="security">Güvenlik</option>
+              </select>
+            </label>
+            <label>
+              <span>Mesaj</span>
+              <textarea id="fb-message" name="message" rows="5" maxlength="2000" required></textarea>
+            </label>
+            <input id="fb-website" name="website" type="text" autocomplete="off" tabindex="-1" aria-hidden="true" class="honeypot" />
+            <button id="fb-submit" class="ghost-btn" type="submit">Gönder ve GitHub Issue aç</button>
+          </form>
+        </article>
+
+        <article class="card feedback-status">
+          <h2>Kullanıcı Bildirimleri</h2>
+          <div id="feedback-alert" class="feedback-alert info">Henüz geri bildirim gönderilmedi.</div>
+          <p id="feedback-meta" class="feedback-meta">Bildirimler burada kullanıcı dostu şekilde gösterilir.</p>
+        </article>
+      </section>
+    </main>
+
+    <script type="module" src="/assets/ui/app.js"></script>
+  </body>
+</html>

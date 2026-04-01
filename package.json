@@ -1,0 +1,47 @@
+{
+  "name": "fraudsense",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/main.ts",
+    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --config jest.config.mjs --runInBand",
+    "test:watch": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --config jest.config.mjs --watch",
+    "type-check": "tsc --noEmit",
+    "prisma:generate": "prisma generate",
+    "prisma:validate": "prisma validate",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:reset": "prisma db execute --schema prisma/schema.prisma --file db/migrations/20260401_001_initial_fraud_tables.down.sql ; prisma db execute --schema prisma/schema.prisma --file db/migrations/20260401_001_initial_fraud_tables.up.sql ; npm run db:seed",
+    "e2e:ps": "powershell -ExecutionPolicy Bypass -File .\\docs\\e2e-curl.ps1"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@fastify/helmet": "^11.1.1",
+    "@fastify/rate-limit": "^9.1.0",
+    "@fastify/static": "^6.12.0",
+    "@prisma/client": "^5.22.0",
+    "fast-glob": "^3.3.3",
+    "fastify": "^4.29.1",
+    "ioredis": "^5.6.1",
+    "jose": "^5.9.6",
+    "pino": "^9.6.0",
+    "reflect-metadata": "^0.2.2",
+    "tsyringe": "^4.8.0",
+    "uuid": "^11.1.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.14.1",
+    "@types/supertest": "^6.0.3",
+    "jest": "^29.7.0",
+    "prisma": "^5.22.0",
+    "supertest": "^7.1.0",
+    "ts-jest": "^29.2.6",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.3"
+  }
+}

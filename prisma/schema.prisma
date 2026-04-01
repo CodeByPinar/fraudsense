@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Transaction {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId            String   @map("user_id")
+  amount            Decimal  @db.Decimal(18, 2)
+  currency          String   @db.Char(3)
+  riskScore         Int      @map("risk_score")
+  decision          String
+  idempotencyKey    String   @unique @map("idempotency_key")
+  idempotencyHash   String   @map("idempotency_hash")
+  deviceFingerprint String?  @map("device_fingerprint")
+  metadata          Json?
+  version           Int      @default(1)
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([userId, createdAt(sort: Desc)], map: "idx_transactions_user_created")
+  @@index([createdAt], map: "idx_transactions_created_brin", type: Brin)
+  @@map("transactions")
+}
+
+model RefreshToken {
+  tokenId           String    @id @map("token_id") @db.Uuid
+  userId            String    @map("user_id")
+  tokenHash         String    @map("token_hash")
+  expiresAt         DateTime  @map("expires_at") @db.Timestamptz(6)
+  revokedAt         DateTime? @map("revoked_at") @db.Timestamptz(6)
+  replacedByTokenId String?   @map("replaced_by_token_id") @db.Uuid
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([userId], map: "idx_refresh_tokens_user")
+  @@index([expiresAt], map: "idx_refresh_tokens_expires")
+  @@map("refresh_tokens")
+}
+
+model ServiceApiKey {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  keyId     String    @map("key_id")
+  secret    String
+  enabled   Boolean   @default(true)
+  version   Int       @default(1)
+  expiresAt DateTime? @map("expires_at") @db.Timestamptz(6)
+  revokedAt DateTime? @map("revoked_at") @db.Timestamptz(6)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([keyId, enabled], map: "idx_service_api_keys_key_enabled")
+  @@index([keyId, version], map: "idx_service_api_keys_key_version")
+  @@map("service_api_keys")
+}
+
+model FraudRule {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String   @unique
+  enabled    Boolean  @default(true)
+  weight     Int
+  conditions Json
+  version    Int      @default(1)
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([enabled], map: "idx_fraud_rules_enabled")
+  @@index([conditions], map: "idx_fraud_rules_conditions_gin", type: Gin)
+  @@map("fraud_rules")
+}
+
+model RiskThreshold {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  reviewThreshold   Int      @map("review_threshold")
+  blockThreshold    Int      @map("block_threshold")
+  earlyExitScore    Int      @map("early_exit_score")
+  multiTriggerBoost Decimal  @map("multi_trigger_boost") @db.Decimal(5, 4)
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("risk_thresholds")
+}

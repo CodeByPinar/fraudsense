@@ -1,0 +1,33 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: fraudsense-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: fraudsense
+      POSTGRES_PASSWORD: fraudsense
+      POSTGRES_DB: fraudsense
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fraudsense -d fraudsense"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    volumes:
+      - fraudsense_pg_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    container_name: fraudsense-redis
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  fraudsense_pg_data:
